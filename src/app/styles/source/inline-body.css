@@ -977,8 +977,6 @@
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
 }
-/* margin:auto (not justify-content) so an image wider than the viewport
-   stays reachable on both sides when zoomed. */
 .dds-lightbox-img {
   display: block;
   margin: auto;
@@ -1039,8 +1037,6 @@
 }
 .dds-lightbox-caption-title:empty,
 .dds-lightbox-caption-desc:empty { display: none; }
-/* Pinning body (rather than overflow:hidden on html) keeps the page from
-   losing its scroll offset while the lightbox is open. */
 html.dds-lightbox-locked { overflow: hidden; }
 html.dds-lightbox-locked body {
   position: fixed;

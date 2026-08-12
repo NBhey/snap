@@ -54,9 +54,6 @@
 
 @media (max-width: 767px) {
   #use-cases {
-    /* The tab row expands by the same fluid gutter below. Keep the section
-       gutter fluid too; a fixed 16px value only cancels at exactly 375px and
-       causes document-level overflow at wider intermediate mobile widths. */
     padding-inline: calc(16 / 3.75 * 1vw);
   }
 }
@@ -120,9 +117,6 @@
 }
 
 #roadmap .dds-rmap-track {
-  /* Keep the physical padding and the line origin on the same responsive
-     variable. A legacy tablet layout rule used a 768px reference for the
-     padding while the roadmap itself uses 810px, shifting the line by 1px. */
   padding-inline: var(--dds-rmap-pad);
 }
 
@@ -318,8 +312,6 @@
     pointer-events: none;
   }
 
-  /* The menu is toggled with display, which can't transition â€” so the panel and
-     its children animate instead. Going display:none -> flex replays them. */
   #header .dds-main-toggle:checked ~ .dds-main-menu {
     animation: dds-menu-panel-in 140ms ease both;
   }
@@ -469,8 +461,6 @@
   }
 
   #hero .dds-app-preview-media {
-    /* 16px gutters, matching the rest of the mobile layout. !important beats
-       the later inline #browser-annotation-fixes width:100%. */
     width: calc(100% - calc(32 / 3.75 * 1vw)) !important;
     height: auto !important;
     min-height: 0;
@@ -484,7 +474,6 @@
   #hero img[data-cms-image="hero.app-screenshot"] {
     width: 100%;
     height: 100%;
-    /* !important beats the later inline #browser-annotation-fixes block. */
     border-radius: 6px 6px 0 0 !important;
     object-fit: cover;
     object-position: center;
@@ -546,8 +535,6 @@
     border-radius: 6px !important;
   }
 
-  /* Vertical scrolling stays with the browser; the horizontal axis is used to
-     page through the slides. */
   #use-cases .dds-tabs-panel {
     touch-action: pan-y;
   }
@@ -582,8 +569,6 @@
     border-radius: 0;
     background-color: #fff;
     grid-template-columns: calc(90 / 3.75 * 1vw) calc(100 / 3.75 * 1vw) repeat(3, calc(120 / 3.75 * 1vw)) calc(140 / 3.75 * 1vw);
-    /* Match the surface to the sum of its tracks. The exported 720px width
-       leaves a 30px empty phase after the final column. */
     width: calc(690 / 3.75 * 1vw);
   }
 
@@ -591,8 +576,6 @@
     background-color: #fff;
   }
 
-  /* The exported dividers use alpha. Under the sticky columns that exposes
-     the moving cells and makes one divider look doubled while scrolling. */
   #compare .sds-compare-cell:nth-child(3),
   #compare .sds-compare-cell:nth-child(4),
   #compare .sds-compare-cell:nth-child(5) {
@@ -637,9 +620,6 @@
     background-origin: padding-box, border-box;
     background-clip: padding-box, border-box;
     background-repeat: no-repeat, no-repeat;
-    /* Row heights are fixed (60 head + 4 Ã— 72), so the border gradient is drawn once
-       at full column height and each row shows its own vertical slice of it â€”
-       avoids the gradient restarting per-row (striped look). */
     background-size: 100% 100%, 100% calc(348 / 3.75 * 1vw);
     background-position: 0 0, 0 0;
   }
@@ -733,14 +713,10 @@
   }
 }
 
-/* The step-2 render is a centred object, so the mobile 2/1 and tablet 1/1 crops
-   cut it off. It ships per-breakpoint reframes instead; `display: contents`
-   keeps the <img> laid out exactly as the unwrapped siblings. */
 #process .dds-steps-picture {
   display: contents;
 }
 
-/* Keep one static, contained logo group outside the mobile marquee layout. */
 @media (min-width: 768px) {
   #logos {
     overflow: hidden;

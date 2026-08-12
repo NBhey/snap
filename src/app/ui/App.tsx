@@ -14,6 +14,7 @@ import { Roadmap } from '@/widgets/roadmap';
 import { Roles } from '@/widgets/roles';
 import { Testimonials } from '@/widgets/testimonials';
 import { UseCases } from '@/widgets/use-cases';
+import { ToastContainer } from 'react-toastify';
 
 export function App() {
   return (
@@ -36,7 +37,14 @@ export function App() {
         <Cta />
       </main>
       <Footer />
+      <ToastContainer
+        position="top-right"
+        autoClose={3800}
+        hideProgressBar
+        closeButton={false}
+        newestOnTop
+        limit={2}
+      />
     </div>
   );
 }
-
