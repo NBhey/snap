@@ -74,7 +74,7 @@ demo-form → cta → footer
 
 ## Публикация
 
-Vite настроен с `base: '/snapbuild-test-task/'`. Workflow `.github/workflows/deploy.yml` собирает проект и публикует каталог `dist` в GitHub Pages после push в `main`.
+Vite настроен с `base: '/snap/'` по имени GitHub-репозитория. Workflow `.github/workflows/deploy.yml` собирает проект и публикует каталог `dist` в GitHub Pages после push в `master`.
 
 Ссылка на опубликованную версию будет добавлена после создания публичного репозитория и первого деплоя.
 
