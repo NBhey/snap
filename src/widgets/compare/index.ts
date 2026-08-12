@@ -1,0 +1,2 @@
+export { Compare } from './ui/Compare';
+

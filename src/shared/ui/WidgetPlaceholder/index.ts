@@ -1,0 +1,2 @@
+export { WidgetPlaceholder } from './WidgetPlaceholder';
+
