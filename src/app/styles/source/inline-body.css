@@ -747,7 +747,7 @@
     letter-spacing: calc(-1.25 / 8.1 * 1vw);
   }
   #features .dds-why-safe-points {
-    grid-template-columns: 1fr;
+    display: flex;
     gap: 16px;
   }
   #features .dds-why-safe-point {
