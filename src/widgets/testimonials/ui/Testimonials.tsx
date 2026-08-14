@@ -1,5 +1,9 @@
 import { useCallback, useRef, useState } from 'react';
-import type { CSSProperties, KeyboardEvent, TouchEvent } from 'react';
+import type {
+  CSSProperties,
+  KeyboardEvent,
+  PointerEvent as ReactPointerEvent,
+} from 'react';
 
 import { useReveal } from '@/shared/lib/reveal';
 
@@ -39,19 +43,24 @@ const testimonials = [
 ] as const;
 
 type Direction = 'next' | 'prev';
-type Gesture = {
+type Drag = {
+  pointerId: number;
   startX: number;
-  startY: number;
   deltaX: number;
-  axis: 'x' | 'y' | null;
+  active: boolean;
 };
 
-const initialGesture: Gesture = { startX: 0, startY: 0, deltaX: 0, axis: null };
+const initialDrag: Drag = { pointerId: -1, startX: 0, deltaX: 0, active: false };
+
+/** Насколько нужно утащить карточку, чтобы она улетела, а не вернулась. */
+const DRAG_THRESHOLD = 40;
 
 export function Testimonials() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [direction, setDirection] = useState<Direction>('next');
-  const gesture = useRef<Gesture>({ ...initialGesture });
+  const [isDragging, setIsDragging] = useState(false);
+  const stackRef = useRef<HTMLDivElement>(null);
+  const drag = useRef<Drag>({ ...initialDrag });
   const { ref: sectionRef, revealClassName } = useReveal();
 
   const showSlide = useCallback((index: number, nextDirection: Direction) => {
@@ -73,37 +82,36 @@ export function Testimonials() {
     });
   }, []);
 
-  const handleTouchStart = (event: TouchEvent<HTMLDivElement>) => {
-    const touch = event.touches[0];
-    gesture.current = {
-      startX: touch.clientX,
-      startY: touch.clientY,
-      deltaX: 0,
-      axis: null,
-    };
+  const handlePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+    // Тянем только основной кнопкой и только одним указателем.
+    if (event.button !== 0 || drag.current.active) return;
+
+    drag.current = { pointerId: event.pointerId, startX: event.clientX, deltaX: 0, active: true };
+    // Сбрасываем сдвиг до включения перетаскивания, иначе первый кадр
+    // возьмёт значение от прошлого жеста и карточка дёрнется.
+    stackRef.current?.style.setProperty('--drag-x', '0');
+    event.currentTarget.setPointerCapture(event.pointerId);
+    setIsDragging(true);
   };
 
-  const handleTouchMove = (event: TouchEvent<HTMLDivElement>) => {
-    const touch = event.touches[0];
-    const deltaX = touch.clientX - gesture.current.startX;
-    const deltaY = touch.clientY - gesture.current.startY;
+  const handlePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (!drag.current.active || event.pointerId !== drag.current.pointerId) return;
 
-    gesture.current.deltaX = deltaX;
-
-    if (!gesture.current.axis && Math.hypot(deltaX, deltaY) >= 8) {
-      gesture.current.axis = Math.abs(deltaX) > Math.abs(deltaY) ? 'x' : 'y';
-    }
+    drag.current.deltaX = event.clientX - drag.current.startX;
+    // Пишем в css-переменную напрямую: в состоянии это был бы ререндер
+    // на каждое движение мыши.
+    stackRef.current?.style.setProperty('--drag-x', String(drag.current.deltaX));
   };
 
-  const handleTouchEnd = () => {
-    const { axis, deltaX } = gesture.current;
+  const handlePointerEnd = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (!drag.current.active || event.pointerId !== drag.current.pointerId) return;
 
-    if (axis === 'x' && Math.abs(deltaX) >= 40) {
-      if (deltaX < 0) showNext();
-      else showPrevious();
-    }
+    const { deltaX } = drag.current;
+    drag.current = { ...initialDrag };
+    setIsDragging(false);
 
-    gesture.current = { ...initialGesture };
+    if (deltaX <= -DRAG_THRESHOLD) showNext();
+    else if (deltaX >= DRAG_THRESHOLD) showPrevious();
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
@@ -140,14 +148,16 @@ export function Testimonials() {
         aria-label="Отзывы клиентов"
         tabIndex={0}
         onKeyDown={handleKeyDown}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
       >
         <div
-          className="dds-testimonials-stack"
+          className={`dds-testimonials-stack${isDragging ? ' is-dragging' : ''}`}
+          ref={stackRef}
           style={{ '--stack-dir': direction === 'next' ? 1 : -1 } as CSSProperties}
           aria-live="polite"
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerEnd}
+          onPointerCancel={handlePointerEnd}
         >
           {testimonials.map((testimonial, index) => {
             // 0 — верхняя карточка, дальше вглубь стопки. Последняя глубина —
@@ -158,7 +168,9 @@ export function Testimonials() {
 
             return (
               <article
-                className={`dds-testimonial-card${isOffDeck ? ' is-off-deck' : ''}`}
+                className={`dds-testimonial-card${isTop ? ' is-top' : ''}${
+                  isOffDeck ? ' is-off-deck' : ''
+                }`}
                 key={testimonial.name}
                 style={{ '--stack-depth': depth } as CSSProperties}
                 aria-hidden={!isTop}

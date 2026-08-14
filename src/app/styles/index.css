@@ -1193,6 +1193,32 @@ textarea {
     box-shadow 420ms var(--motion-ease);
 }
 
+.dds-testimonials-stack > .dds-testimonial-card.is-top {
+  cursor: grab;
+  touch-action: pan-y;
+}
+
+/*
+  Сдвиг за курсором применяется только пока тянут: иначе после броска
+  новая верхняя карточка унаследовала бы --drag-x от прошлого жеста.
+  Переменная безразмерная, поэтому её можно развести и в px, и в deg.
+*/
+.dds-testimonials-stack.is-dragging > .dds-testimonial-card.is-top {
+  cursor: grabbing;
+  transform:
+    translateX(calc(var(--drag-x, 0) * 1px))
+    rotate(calc(var(--drag-x, 0) * 0.03deg));
+}
+
+.dds-testimonials-stack.is-dragging {
+  user-select: none;
+}
+
+/* Пока карточка под пальцем, она должна идти за ним без задержки. */
+.dds-testimonials-stack.is-dragging > .dds-testimonial-card {
+  transition: none;
+}
+
 /*
   Карточка, которую только что пролистали. Уезжает в сторону и гаснет —
   обязательно поверх стопки, иначе она мгновенно ныряет за остальные
