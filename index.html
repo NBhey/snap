@@ -6,9 +6,6 @@
     <meta name="description" content="Развитие продуктового лендинга снэпбилд" />
     <title>снэпбилд — платформа генеративного дизайна</title>
     <script>
-      // Прячем содержимое героя до старта entrance-анимации: без этого он
-      // успевает отрисоваться и мигнуть. Класс ставится здесь, а не в React,
-      // чтобы попасть до первой отрисовки. Снимает его useHeroMotion.
       if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         document.documentElement.classList.add('hero-motion-pending');
       }
