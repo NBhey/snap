@@ -1,14 +1,19 @@
 import type { CSSProperties } from 'react';
 
+import { useReveal } from '@/shared/lib/reveal';
+
 import { comparisonCheckIcon } from '../assets';
 
 const benefitColumns = { '--dds-benefit-cols': 6 } as CSSProperties;
 
 export function Compare() {
+  const { ref, revealClassName } = useReveal();
+
   return (
     <section
       id="compare"
-      className="compare dds-compare dds-benefit dds-reveal is-visible"
+      ref={ref}
+      className={`compare dds-compare dds-benefit ${revealClassName}`}
       data-cms-section="compare.benefit"
       data-section-id="019f8703-47cb-76a5-a38e-b7781e1d2734"
       data-template-id="23fe54bb-2b2b-4d84-bc1b-cd8d93a127ea"

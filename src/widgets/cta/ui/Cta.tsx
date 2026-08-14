@@ -1,10 +1,15 @@
+import { useReveal } from '@/shared/lib/reveal';
+
 import { ctaDust } from '../assets';
 
 export function Cta() {
+  const { ref, revealClassName } = useReveal();
+
   return (
     <section
       id="cta"
-      className="cta dds-cta dds-launch"
+      ref={ref}
+      className={`cta dds-cta dds-launch ${revealClassName}`}
       data-cms-section="cta.launch"
       data-section-id="019f8703-47cb-76d5-a38e-b7781f231618"
     >

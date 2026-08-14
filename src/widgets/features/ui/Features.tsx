@@ -1,3 +1,7 @@
+import type { CSSProperties } from 'react';
+
+import { useReveal } from '@/shared/lib/reveal';
+
 import { securityMedia } from '../assets';
 
 const points = [
@@ -29,12 +33,18 @@ function FeatureIcon({ type }: { type: (typeof points)[number]['icon'] }) {
 }
 
 export function Features() {
+  const { ref, revealClassName } = useReveal();
+
   return (
-    <section id="features" className="features dds-why-safe">
+    <section id="features" ref={ref} className={`features dds-why-safe ${revealClassName}`}>
       <h2 className="dds-why-safe-section-title">Безопасность без компромиссов</h2>
       <div className="dds-why-safe-points">
         {points.map((point, index) => (
-          <div className="dds-why-safe-point" key={point.title}>
+          <div
+            className="dds-why-safe-point dds-reveal-item"
+            key={point.title}
+            style={{ '--reveal-index': index } as CSSProperties}
+          >
             <picture className="dds-why-safe-image">
               <source media="(max-width: 767px)" srcSet={securityMedia[index].mobile} />
               <img src={securityMedia[index].desktop} alt="" aria-hidden="true" />

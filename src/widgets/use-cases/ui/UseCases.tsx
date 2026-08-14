@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+import { useReveal } from '@/shared/lib/reveal';
+
 import { useCaseMedia } from '../assets';
 
 const copy = [
@@ -38,6 +40,7 @@ const copy = [
 export function UseCases() {
   const [activeTab, setActiveTab] = useState(0);
   const [activeItem, setActiveItem] = useState(0);
+  const { ref, revealClassName } = useReveal();
 
   const selectTab = (index: number) => {
     setActiveTab(index);
@@ -47,7 +50,8 @@ export function UseCases() {
   return (
     <section
       id="use-cases"
-      className="use-cases dds-use-cases dds-tabs"
+      ref={ref}
+      className={`use-cases dds-use-cases dds-tabs ${revealClassName}`}
       data-section-id="019f8703-47cb-7689-a38e-b7781d811c91"
     >
       {useCaseMedia.map((group, index) => (

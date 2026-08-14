@@ -1,3 +1,5 @@
+import { useReveal } from '@/shared/lib/reveal';
+
 import { faqItemIcon } from '../assets';
 
 type FaqItem = {
@@ -110,10 +112,13 @@ function FaqColumn({ items }: { items: FaqItem[] }) {
 }
 
 export function Faq() {
+  const { ref, revealClassName } = useReveal();
+
   return (
     <section
       id="faq"
-      className="faq dds-faq dds-accordion dds-reveal is-visible"
+      ref={ref}
+      className={`faq dds-faq dds-accordion ${revealClassName}`}
       data-cms-section="faq.accordion"
       data-section-id="019f8703-47cb-76c5-a38e-b7781ec54f1f"
       data-template-id="0b2a9570-0ea2-5b19-a79c-7d4f47af5430"

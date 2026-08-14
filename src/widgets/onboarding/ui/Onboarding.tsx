@@ -1,3 +1,7 @@
+import type { CSSProperties } from 'react';
+
+import { useReveal } from '@/shared/lib/reveal';
+
 const onboardingSteps = [
   {
     number: '01',
@@ -30,10 +34,13 @@ const onboardingSteps = [
 ] as const;
 
 export function Onboarding() {
+  const { ref, revealClassName } = useReveal();
+
   return (
     <section
       id="onboarding"
-      className="dds-section dds-onboarding dds-reveal is-visible"
+      ref={ref}
+      className={`dds-section dds-onboarding ${revealClassName}`}
     >
       <header className="dds-section__header">
         <span className="dds-onboarding-added">+ Добавлено</span>
@@ -46,8 +53,12 @@ export function Onboarding() {
       </header>
 
       <ol className="dds-onboarding-list">
-        {onboardingSteps.map(({ number, title, description, duration }) => (
-          <li className="dds-onboarding-step" key={number}>
+        {onboardingSteps.map(({ number, title, description, duration }, index) => (
+          <li
+            className="dds-onboarding-step dds-reveal-item"
+            key={number}
+            style={{ '--reveal-index': index } as CSSProperties}
+          >
             <span className="dds-onboarding-marker" aria-hidden="true">
               <span className="dds-onboarding-marker-halo" />
               <span className="dds-onboarding-marker-core" />

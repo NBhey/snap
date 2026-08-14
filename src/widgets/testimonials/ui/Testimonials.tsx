@@ -1,6 +1,8 @@
 import { useCallback, useRef, useState } from 'react';
 import type { KeyboardEvent, TouchEvent } from 'react';
 
+import { useReveal } from '@/shared/lib/reveal';
+
 const testimonials = [
   {
     quote:
@@ -50,6 +52,7 @@ export function Testimonials() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [direction, setDirection] = useState<Direction>('next');
   const gesture = useRef<Gesture>({ ...initialGesture });
+  const { ref: sectionRef, revealClassName } = useReveal();
 
   const showSlide = useCallback((index: number, nextDirection: Direction) => {
     setDirection(nextDirection);
@@ -120,7 +123,8 @@ export function Testimonials() {
   return (
     <section
       id="testimonials"
-      className="dds-section dds-testimonials dds-reveal is-visible"
+      ref={sectionRef}
+      className={`dds-section dds-testimonials ${revealClassName}`}
     >
       <header className="dds-section__header">
         <span className="dds-testimonials-added">+ Добавлено</span>

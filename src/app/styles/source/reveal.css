@@ -1,0 +1,36 @@
+/*
+  Пошаговое появление дочерних элементов внутри секции с `.dds-reveal`.
+  Порядковый номер приходит инлайном: style={{ '--reveal-index': index }}.
+
+  Импортируется последним, чтобы выигрывать у inline-body.css при равной
+  специфичности.
+*/
+
+.dds-reveal-item {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 640ms var(--motion-ease),
+    transform 640ms var(--motion-ease);
+  transition-delay: calc(var(--reveal-index, 0) * 90ms);
+  will-change: opacity, transform;
+}
+
+.dds-reveal.is-visible .dds-reveal-item {
+  opacity: 1;
+  transform: none;
+}
+
+/* Слои под анимацию больше не нужны — отпускаем их после появления. */
+.dds-reveal.is-visible,
+.dds-reveal.is-visible .dds-reveal-item {
+  will-change: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dds-reveal-item {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

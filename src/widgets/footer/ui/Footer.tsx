@@ -1,4 +1,5 @@
 import { snapbuildLogo } from '@/shared/assets/brand';
+import { useReveal } from '@/shared/lib/reveal';
 
 const columns = [
   {
@@ -30,8 +31,10 @@ const columns = [
 ] as const;
 
 export function Footer() {
+  const { ref, revealClassName } = useReveal<HTMLElement>();
+
   return (
-    <footer id="footer" className="footer dds-footer">
+    <footer id="footer" ref={ref} className={`footer dds-footer ${revealClassName}`}>
       <div className="dds-footer-top">
         <div className="dds-footer-brand">
           <a className="dds-footer-logo" href="#hero" aria-label="снэпбилд — на главную">

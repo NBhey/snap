@@ -1,6 +1,9 @@
 import { heroScreenshot } from '../assets';
+import { useHeroMotion } from '../lib/useHeroMotion';
 
 export function Hero() {
+  useHeroMotion();
+
   return (
     <section id="hero" className="hero dds-app-preview">
       <div className="dds-app-preview-card">

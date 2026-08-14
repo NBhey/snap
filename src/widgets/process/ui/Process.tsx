@@ -1,4 +1,6 @@
-import type { ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
+
+import { useReveal } from '@/shared/lib/reveal';
 
 import { processMedia } from '../assets';
 
@@ -36,8 +38,10 @@ const steps: Step[] = [
 ];
 
 export function Process() {
+  const { ref, revealClassName } = useReveal();
+
   return (
-    <section id="process" className="process dds-steps">
+    <section id="process" ref={ref} className={`process dds-steps ${revealClassName}`}>
       <div className="dds-steps-header">
         <h2 className="dds-steps-title">
           <span className="dds-steps-wide">Одна платформа — весь маркетинг</span>
@@ -48,8 +52,12 @@ export function Process() {
         </p>
       </div>
       <div className="dds-steps-grid">
-        {steps.map((step) => (
-          <article className="dds-steps-card" key={step.title}>
+        {steps.map((step, index) => (
+          <article
+            className="dds-steps-card dds-reveal-item"
+            key={step.title}
+            style={{ '--reveal-index': index } as CSSProperties}
+          >
             {step.media}
             <div className="dds-steps-overlay">
               <div className="dds-steps-copy">

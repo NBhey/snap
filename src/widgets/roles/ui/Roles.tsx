@@ -1,3 +1,7 @@
+import type { CSSProperties } from 'react';
+
+import { useReveal } from '@/shared/lib/reveal';
+
 const roleCases = [
   {
     role: 'Маркетинг',
@@ -30,8 +34,10 @@ const roleCases = [
 ] as const;
 
 export function Roles() {
+  const { ref, revealClassName } = useReveal();
+
   return (
-    <section id="roles" className="dds-section dds-roles dds-reveal is-visible">
+    <section id="roles" ref={ref} className={`dds-section dds-roles ${revealClassName}`}>
       <header className="dds-section__header">
         <span className="dds-roles-added">+ Добавлено</span>
         <p className="dds-section__eyebrow">Кейсы по ролям</p>
@@ -43,8 +49,12 @@ export function Roles() {
       </header>
 
       <div className="dds-roles-grid">
-        {roleCases.map(({ role, title, description, formats }) => (
-          <article className="dds-role-card" key={role}>
+        {roleCases.map(({ role, title, description, formats }, index) => (
+          <article
+            className="dds-role-card dds-reveal-item"
+            key={role}
+            style={{ '--reveal-index': index } as CSSProperties}
+          >
             <p className="dds-role-eyebrow">{role}</p>
             <h3 className="dds-role-title">{title}</h3>
             <p className="dds-role-description">{description}</p>

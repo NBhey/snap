@@ -1,4 +1,7 @@
 import { useState } from 'react';
+import type { CSSProperties } from 'react';
+
+import { useReveal } from '@/shared/lib/reveal';
 
 import {
   pricingBusinessImage,
@@ -74,9 +77,10 @@ const plans = [
 
 export function Pricing() {
   const [period, setPeriod] = useState<BillingPeriod>('month');
+  const { ref, revealClassName } = useReveal();
 
   return (
-    <section id="pricing" className="dds-pricing dds-section dds-reveal is-visible">
+    <section id="pricing" ref={ref} className={`dds-pricing dds-section ${revealClassName}`}>
       <header className="dds-pricing-head">
         <span className="dds-pricing-added">+ Добавлено</span>
         <div className="dds-pricing-heading">
@@ -109,13 +113,14 @@ export function Pricing() {
       </header>
 
       <div className="dds-pricing-grid">
-        {plans.map((plan) => {
+        {plans.map((plan, index) => {
           const price = plan.prices[period];
 
           return (
             <article
-              className={`dds-pricing-plan${plan.featured ? ' is-featured' : ''}`}
+              className={`dds-pricing-plan dds-reveal-item${plan.featured ? ' is-featured' : ''}`}
               key={plan.id}
+              style={{ '--reveal-index': index } as CSSProperties}
             >
               <div className="dds-pricing-media">
                 <img src={plan.image} alt={plan.imageAlt} loading="lazy" />

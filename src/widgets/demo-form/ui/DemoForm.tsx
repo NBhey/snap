@@ -3,6 +3,8 @@ import { useForm, useWatch } from 'react-hook-form';
 import type { SubmitHandler } from 'react-hook-form';
 import { toast } from 'react-toastify';
 
+import { useReveal } from '@/shared/lib/reveal';
+
 type DemoFormValues = {
   name: string;
   email: string;
@@ -22,6 +24,7 @@ const wait = (delay: number) => new Promise((resolve) => window.setTimeout(resol
 
 export function DemoForm() {
   const [isSuccess, setIsSuccess] = useState(false);
+  const { ref, revealClassName } = useReveal();
   const {
     register,
     handleSubmit,
@@ -58,7 +61,7 @@ export function DemoForm() {
   };
 
   return (
-    <section id="demo" className="dds-section dds-demo-form dds-reveal is-visible">
+    <section id="demo" ref={ref} className={`dds-section dds-demo-form ${revealClassName}`}>
       <div className="dds-demo-layout">
         <div className="dds-demo-intro">
           <header className="dds-section__header">

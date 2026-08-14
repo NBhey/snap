@@ -1,6 +1,8 @@
 import { useRef } from 'react';
 import type { CSSProperties, PointerEvent as ReactPointerEvent } from 'react';
 
+import { useReveal } from '@/shared/lib/reveal';
+
 type RoadmapItem = {
   key: number;
   title: string;
@@ -101,6 +103,7 @@ const progressStyle = { '--dds-rmap-progress': 8 } as CSSProperties;
 export function Roadmap() {
   const scrollerRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef({ active: false, startX: 0, scrollLeft: 0 });
+  const { ref: sectionRef, revealClassName } = useReveal();
 
   const stopDragging = (event: ReactPointerEvent<HTMLDivElement>) => {
     if (!dragRef.current.active) return;
@@ -115,7 +118,8 @@ export function Roadmap() {
   return (
     <section
       id="roadmap"
-      className="roadmap dds-rmap dds-reveal is-visible"
+      ref={sectionRef}
+      className={`roadmap dds-rmap ${revealClassName}`}
       data-cms-section="roadmap.platform"
       data-section-id="019f8703-47cb-76b5-a38e-b7781e65d44b"
       data-template-id="3e95b975-11d0-4fdb-8edb-7d1c7073bd94"

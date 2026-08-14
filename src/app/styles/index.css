@@ -4,6 +4,7 @@
 @import "./source/runtime.css";
 @import "./source/overrides.css";
 @import "./source/inline-body.css";
+@import "./source/reveal.css";
 @config '../../../tailwind.config.ts';
 
 @font-face {

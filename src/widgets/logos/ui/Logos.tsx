@@ -1,5 +1,7 @@
 import type { CSSProperties } from 'react';
 
+import { useReveal } from '@/shared/lib/reveal';
+
 import { partnerLogos } from '../assets';
 
 function LogoGroup({ hidden = false }: { hidden?: boolean }) {
@@ -31,10 +33,15 @@ function LogoGroup({ hidden = false }: { hidden?: boolean }) {
 }
 
 export function Logos() {
+  const { ref, revealClassName, isRevealed } = useReveal();
+
   return (
     <section
       id="logos"
-      className="logos dds-logos dds-marquee dds-reveal is-logos-revealed is-visible"
+      ref={ref}
+      className={`logos dds-logos dds-marquee ${revealClassName}${
+        isRevealed ? ' is-logos-revealed' : ''
+      }`}
       data-cms-section="logos.marquee"
       data-section-id="019f8703-47cb-7669-a38e-b7781c7e8174"
       data-template-id="e49c66ed-927c-5596-8eb2-bd01ea1cbc23"
