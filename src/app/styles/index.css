@@ -1166,12 +1166,53 @@ textarea {
   background: #fff;
 }
 
-.dds-testimonial-card--next {
-  animation: dds-slide-in-next 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
+.dds-testimonials-stack {
+  --stack-step: calc(14 / 3.75 * 1vw);
+  display: grid;
+  padding-bottom: calc(var(--stack-step) * 2);
 }
 
-.dds-testimonial-card--prev {
-  animation: dds-slide-in-prev 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
+.dds-testimonials-stack > .dds-testimonial-card {
+  grid-area: 1 / 1;
+  z-index: calc(30 - var(--stack-depth, 0));
+  transform:
+    translateY(calc(var(--stack-depth, 0) * var(--stack-step)))
+    scale(calc(1 - var(--stack-depth, 0) * 0.045));
+  box-shadow: 0 calc(var(--stack-depth, 0) * 3px) calc(var(--stack-depth, 0) * 10px)
+    rgba(0, 0, 0, 0.05);
+  transition:
+    transform 420ms var(--motion-ease),
+    opacity 420ms var(--motion-ease),
+    box-shadow 420ms var(--motion-ease);
+}
+
+.dds-testimonials-stack > .dds-testimonial-card.is-top {
+  cursor: grab;
+  touch-action: pan-y;
+}
+
+.dds-testimonials-stack.is-dragging > .dds-testimonial-card.is-top {
+  cursor: grabbing;
+  transform:
+    translateX(calc(var(--drag-x, 0) * 1px))
+    rotate(calc(var(--drag-x, 0) * 0.03deg));
+}
+
+.dds-testimonials-stack.is-dragging {
+  user-select: none;
+}
+
+.dds-testimonials-stack.is-dragging > .dds-testimonial-card {
+  transition: none;
+}
+
+.dds-testimonials-stack > .dds-testimonial-card.is-off-deck {
+  z-index: 40;
+  opacity: 0;
+  transform:
+    translateX(calc(var(--stack-dir, 1) * -18%))
+    rotate(calc(var(--stack-dir, 1) * -4deg))
+    scale(0.94);
 }
 
 .dds-testimonial-quote,
@@ -1303,6 +1344,10 @@ textarea {
     border-radius: calc(24 / 8.1 * 1vw);
   }
 
+  .dds-testimonials-stack {
+    --stack-step: calc(14 / 8.1 * 1vw);
+  }
+
   .dds-testimonial-card {
     min-height: calc(410 / 8.1 * 1vw);
     gap: calc(64 / 8.1 * 1vw);
@@ -1388,6 +1433,10 @@ textarea {
     border-radius: calc(24 / 14.4 * 1vw);
   }
 
+  .dds-testimonials-stack {
+    --stack-step: calc(14 / 14.4 * 1vw);
+  }
+
   .dds-testimonial-card {
     min-height: calc(400 / 14.4 * 1vw);
     gap: calc(80 / 14.4 * 1vw);
@@ -1448,9 +1497,8 @@ textarea {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .dds-testimonial-card--next,
-  .dds-testimonial-card--prev {
-    animation: none;
+  .dds-testimonials-stack > .dds-testimonial-card {
+    transition: none;
   }
 }
 

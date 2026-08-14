@@ -1,5 +1,9 @@
 import { useCallback, useRef, useState } from 'react';
-import type { KeyboardEvent, TouchEvent } from 'react';
+import type {
+  CSSProperties,
+  KeyboardEvent,
+  PointerEvent as ReactPointerEvent,
+} from 'react';
 
 import { useReveal } from '@/shared/lib/reveal';
 
@@ -39,19 +43,23 @@ const testimonials = [
 ] as const;
 
 type Direction = 'next' | 'prev';
-type Gesture = {
+type Drag = {
+  pointerId: number;
   startX: number;
-  startY: number;
   deltaX: number;
-  axis: 'x' | 'y' | null;
+  active: boolean;
 };
 
-const initialGesture: Gesture = { startX: 0, startY: 0, deltaX: 0, axis: null };
+const initialDrag: Drag = { pointerId: -1, startX: 0, deltaX: 0, active: false };
+
+const DRAG_THRESHOLD = 40;
 
 export function Testimonials() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [direction, setDirection] = useState<Direction>('next');
-  const gesture = useRef<Gesture>({ ...initialGesture });
+  const [isDragging, setIsDragging] = useState(false);
+  const stackRef = useRef<HTMLDivElement>(null);
+  const drag = useRef<Drag>({ ...initialDrag });
   const { ref: sectionRef, revealClassName } = useReveal();
 
   const showSlide = useCallback((index: number, nextDirection: Direction) => {
@@ -73,37 +81,31 @@ export function Testimonials() {
     });
   }, []);
 
-  const handleTouchStart = (event: TouchEvent<HTMLDivElement>) => {
-    const touch = event.touches[0];
-    gesture.current = {
-      startX: touch.clientX,
-      startY: touch.clientY,
-      deltaX: 0,
-      axis: null,
-    };
+  const handlePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (event.button !== 0 || drag.current.active) return;
+
+    drag.current = { pointerId: event.pointerId, startX: event.clientX, deltaX: 0, active: true };
+    stackRef.current?.style.setProperty('--drag-x', '0');
+    event.currentTarget.setPointerCapture(event.pointerId);
+    setIsDragging(true);
   };
 
-  const handleTouchMove = (event: TouchEvent<HTMLDivElement>) => {
-    const touch = event.touches[0];
-    const deltaX = touch.clientX - gesture.current.startX;
-    const deltaY = touch.clientY - gesture.current.startY;
+  const handlePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (!drag.current.active || event.pointerId !== drag.current.pointerId) return;
 
-    gesture.current.deltaX = deltaX;
-
-    if (!gesture.current.axis && Math.hypot(deltaX, deltaY) >= 8) {
-      gesture.current.axis = Math.abs(deltaX) > Math.abs(deltaY) ? 'x' : 'y';
-    }
+    drag.current.deltaX = event.clientX - drag.current.startX;
+    stackRef.current?.style.setProperty('--drag-x', String(drag.current.deltaX));
   };
 
-  const handleTouchEnd = () => {
-    const { axis, deltaX } = gesture.current;
+  const handlePointerEnd = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (!drag.current.active || event.pointerId !== drag.current.pointerId) return;
 
-    if (axis === 'x' && Math.abs(deltaX) >= 40) {
-      if (deltaX < 0) showNext();
-      else showPrevious();
-    }
+    const { deltaX } = drag.current;
+    drag.current = { ...initialDrag };
+    setIsDragging(false);
 
-    gesture.current = { ...initialGesture };
+    if (deltaX <= -DRAG_THRESHOLD) showNext();
+    else if (deltaX >= DRAG_THRESHOLD) showPrevious();
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
@@ -117,8 +119,6 @@ export function Testimonials() {
       showPrevious();
     }
   };
-
-  const activeTestimonial = testimonials[activeIndex];
 
   return (
     <section
@@ -142,28 +142,48 @@ export function Testimonials() {
         aria-label="Отзывы клиентов"
         tabIndex={0}
         onKeyDown={handleKeyDown}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
       >
-        <article
-          className={`dds-testimonial-card dds-testimonial-card--${direction}`}
-          key={activeIndex}
+        <div
+          className={`dds-testimonials-stack${isDragging ? ' is-dragging' : ''}`}
+          ref={stackRef}
+          style={{ '--stack-dir': direction === 'next' ? 1 : -1 } as CSSProperties}
           aria-live="polite"
-          aria-label={`Отзыв ${activeIndex + 1} из ${testimonials.length}`}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerEnd}
+          onPointerCancel={handlePointerEnd}
         >
-          <blockquote className="dds-testimonial-quote">«{activeTestimonial.quote}»</blockquote>
+          {testimonials.map((testimonial, index) => {
+            const depth = (index - activeIndex + testimonials.length) % testimonials.length;
+            const isTop = depth === 0;
+            const isOffDeck = depth === testimonials.length - 1;
 
-          <footer className="dds-testimonial-footer">
-            <div className="dds-testimonial-author">
-              <p className="dds-testimonial-name">{activeTestimonial.name}</p>
-              <p className="dds-testimonial-meta">
-                {activeTestimonial.position}, {activeTestimonial.company}
-              </p>
-            </div>
-            <p className="dds-testimonial-result">{activeTestimonial.result}</p>
-          </footer>
-        </article>
+            return (
+              <article
+                className={`dds-testimonial-card${isTop ? ' is-top' : ''}${
+                  isOffDeck ? ' is-off-deck' : ''
+                }`}
+                key={testimonial.name}
+                style={{ '--stack-depth': depth } as CSSProperties}
+                aria-hidden={!isTop}
+                inert={!isTop}
+                aria-label={isTop ? `Отзыв ${index + 1} из ${testimonials.length}` : undefined}
+              >
+                <blockquote className="dds-testimonial-quote">«{testimonial.quote}»</blockquote>
+
+                <footer className="dds-testimonial-footer">
+                  <div className="dds-testimonial-author">
+                    <p className="dds-testimonial-name">{testimonial.name}</p>
+                    <p className="dds-testimonial-meta">
+                      {testimonial.position}, {testimonial.company}
+                    </p>
+                  </div>
+                  <p className="dds-testimonial-result">{testimonial.result}</p>
+                </footer>
+              </article>
+            );
+          })}
+        </div>
 
         <div className="dds-testimonials-navigation">
           <div className="dds-testimonials-dots" role="tablist" aria-label="Выбор отзыва">
