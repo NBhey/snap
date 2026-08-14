@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from 'react';
-import type { KeyboardEvent, TouchEvent } from 'react';
+import type { CSSProperties, KeyboardEvent, TouchEvent } from 'react';
 
 import { useReveal } from '@/shared/lib/reveal';
 
@@ -118,8 +118,6 @@ export function Testimonials() {
     }
   };
 
-  const activeTestimonial = testimonials[activeIndex];
-
   return (
     <section
       id="testimonials"
@@ -146,24 +144,42 @@ export function Testimonials() {
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        <article
-          className={`dds-testimonial-card dds-testimonial-card--${direction}`}
-          key={activeIndex}
+        <div
+          className="dds-testimonials-stack"
+          style={{ '--stack-dir': direction === 'next' ? 1 : -1 } as CSSProperties}
           aria-live="polite"
-          aria-label={`Отзыв ${activeIndex + 1} из ${testimonials.length}`}
         >
-          <blockquote className="dds-testimonial-quote">«{activeTestimonial.quote}»</blockquote>
+          {testimonials.map((testimonial, index) => {
+            // 0 — верхняя карточка, дальше вглубь стопки. Последняя глубина —
+            // слот «только что пролистанной», она уезжает и гаснет.
+            const depth = (index - activeIndex + testimonials.length) % testimonials.length;
+            const isTop = depth === 0;
+            const isOffDeck = depth === testimonials.length - 1;
 
-          <footer className="dds-testimonial-footer">
-            <div className="dds-testimonial-author">
-              <p className="dds-testimonial-name">{activeTestimonial.name}</p>
-              <p className="dds-testimonial-meta">
-                {activeTestimonial.position}, {activeTestimonial.company}
-              </p>
-            </div>
-            <p className="dds-testimonial-result">{activeTestimonial.result}</p>
-          </footer>
-        </article>
+            return (
+              <article
+                className={`dds-testimonial-card${isOffDeck ? ' is-off-deck' : ''}`}
+                key={testimonial.name}
+                style={{ '--stack-depth': depth } as CSSProperties}
+                aria-hidden={!isTop}
+                inert={!isTop}
+                aria-label={isTop ? `Отзыв ${index + 1} из ${testimonials.length}` : undefined}
+              >
+                <blockquote className="dds-testimonial-quote">«{testimonial.quote}»</blockquote>
+
+                <footer className="dds-testimonial-footer">
+                  <div className="dds-testimonial-author">
+                    <p className="dds-testimonial-name">{testimonial.name}</p>
+                    <p className="dds-testimonial-meta">
+                      {testimonial.position}, {testimonial.company}
+                    </p>
+                  </div>
+                  <p className="dds-testimonial-result">{testimonial.result}</p>
+                </footer>
+              </article>
+            );
+          })}
+        </div>
 
         <div className="dds-testimonials-navigation">
           <div className="dds-testimonials-dots" role="tablist" aria-label="Выбор отзыва">
