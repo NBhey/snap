@@ -52,7 +52,6 @@ type Drag = {
 
 const initialDrag: Drag = { pointerId: -1, startX: 0, deltaX: 0, active: false };
 
-/** Насколько нужно утащить карточку, чтобы она улетела, а не вернулась. */
 const DRAG_THRESHOLD = 40;
 
 export function Testimonials() {
@@ -83,12 +82,9 @@ export function Testimonials() {
   }, []);
 
   const handlePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
-    // Тянем только основной кнопкой и только одним указателем.
     if (event.button !== 0 || drag.current.active) return;
 
     drag.current = { pointerId: event.pointerId, startX: event.clientX, deltaX: 0, active: true };
-    // Сбрасываем сдвиг до включения перетаскивания, иначе первый кадр
-    // возьмёт значение от прошлого жеста и карточка дёрнется.
     stackRef.current?.style.setProperty('--drag-x', '0');
     event.currentTarget.setPointerCapture(event.pointerId);
     setIsDragging(true);
@@ -98,8 +94,6 @@ export function Testimonials() {
     if (!drag.current.active || event.pointerId !== drag.current.pointerId) return;
 
     drag.current.deltaX = event.clientX - drag.current.startX;
-    // Пишем в css-переменную напрямую: в состоянии это был бы ререндер
-    // на каждое движение мыши.
     stackRef.current?.style.setProperty('--drag-x', String(drag.current.deltaX));
   };
 
@@ -160,8 +154,6 @@ export function Testimonials() {
           onPointerCancel={handlePointerEnd}
         >
           {testimonials.map((testimonial, index) => {
-            // 0 — верхняя карточка, дальше вглубь стопки. Последняя глубина —
-            // слот «только что пролистанной», она уезжает и гаснет.
             const depth = (index - activeIndex + testimonials.length) % testimonials.length;
             const isTop = depth === 0;
             const isOffDeck = depth === testimonials.length - 1;

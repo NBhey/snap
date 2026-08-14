@@ -1169,22 +1169,15 @@ textarea {
 .dds-testimonials-stack {
   --stack-step: calc(14 / 3.75 * 1vw);
   display: grid;
-  /* Место снизу под выглядывающие края карточек, чтобы они не лезли в навигацию. */
   padding-bottom: calc(var(--stack-step) * 2);
 }
 
-/*
-  Все карточки лежат в одной ячейке грида: контейнер берёт высоту самой
-  длинной, поэтому при листании высота секции не прыгает.
-*/
 .dds-testimonials-stack > .dds-testimonial-card {
   grid-area: 1 / 1;
   z-index: calc(30 - var(--stack-depth, 0));
   transform:
     translateY(calc(var(--stack-depth, 0) * var(--stack-step)))
     scale(calc(1 - var(--stack-depth, 0) * 0.045));
-  /* Белое на светло-сером само по себе не читается — краям нужна тень,
-     иначе стопка выглядит не стопкой, а браком отрисовки. */
   box-shadow: 0 calc(var(--stack-depth, 0) * 3px) calc(var(--stack-depth, 0) * 10px)
     rgba(0, 0, 0, 0.05);
   transition:
@@ -1198,11 +1191,6 @@ textarea {
   touch-action: pan-y;
 }
 
-/*
-  Сдвиг за курсором применяется только пока тянут: иначе после броска
-  новая верхняя карточка унаследовала бы --drag-x от прошлого жеста.
-  Переменная безразмерная, поэтому её можно развести и в px, и в deg.
-*/
 .dds-testimonials-stack.is-dragging > .dds-testimonial-card.is-top {
   cursor: grabbing;
   transform:
@@ -1214,16 +1202,10 @@ textarea {
   user-select: none;
 }
 
-/* Пока карточка под пальцем, она должна идти за ним без задержки. */
 .dds-testimonials-stack.is-dragging > .dds-testimonial-card {
   transition: none;
 }
 
-/*
-  Карточка, которую только что пролистали. Уезжает в сторону и гаснет —
-  обязательно поверх стопки, иначе она мгновенно ныряет за остальные
-  и ухода не видно.
-*/
 .dds-testimonials-stack > .dds-testimonial-card.is-off-deck {
   z-index: 40;
   opacity: 0;
