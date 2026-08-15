@@ -2,6 +2,8 @@ import type { CSSProperties } from 'react';
 
 import { useReveal } from '@/shared/lib/reveal';
 
+import { useTimelineProgress } from '../lib/useTimelineProgress';
+
 const onboardingSteps = [
   {
     number: '01',
@@ -35,6 +37,7 @@ const onboardingSteps = [
 
 export function Onboarding() {
   const { ref, revealClassName } = useReveal();
+  const listRef = useTimelineProgress<HTMLOListElement>();
 
   return (
     <section
@@ -52,7 +55,7 @@ export function Onboarding() {
         </p>
       </header>
 
-      <ol className="dds-onboarding-list">
+      <ol className="dds-onboarding-list" ref={listRef}>
         {onboardingSteps.map(({ number, title, description, duration }, index) => (
           <li
             className="dds-onboarding-step dds-reveal-item"
