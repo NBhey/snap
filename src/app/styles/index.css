@@ -1508,7 +1508,8 @@ textarea {
 }
 
 .dds-onboarding-list {
-  --line-inset: calc(16 / 3.75 * 1vw);
+  --line-top: calc(16 / 3.75 * 1vw);
+  --line-bottom: calc(16 / 3.75 * 1vw);
   --line-x: calc(16 / 3.75 * 1vw);
   --comet-size: calc(30 / 3.75 * 1vw);
   position: relative;
@@ -1521,8 +1522,8 @@ textarea {
 
 .dds-onboarding-list::before {
   position: absolute;
-  top: var(--line-inset);
-  bottom: var(--line-inset);
+  top: var(--line-top);
+  bottom: var(--line-bottom);
   left: var(--line-x);
   width: 1px;
   background: linear-gradient(180deg, #ff6d3c 0%, #ff6ba7 50%, #bb6dff 100%);
@@ -1532,7 +1533,8 @@ textarea {
 .dds-onboarding-list::after {
   position: absolute;
   top: calc(
-    var(--line-inset) + (100% - 2 * var(--line-inset)) * var(--timeline-progress, 0)
+    var(--line-top) +
+      (100% - var(--line-top) - var(--line-bottom)) * var(--timeline-progress, 0)
   );
   left: var(--line-x);
   width: var(--comet-size);
@@ -1668,7 +1670,8 @@ textarea {
   }
 
   .dds-onboarding-list {
-    --line-inset: calc(16 / 8.1 * 1vw);
+    --line-top: calc(16 / 8.1 * 1vw);
+    --line-bottom: calc(16 / 8.1 * 1vw);
     --line-x: calc(16 / 8.1 * 1vw);
     --comet-size: calc(30 / 8.1 * 1vw);
     grid-template-columns: 1fr;
@@ -2326,7 +2329,8 @@ textarea {
   }
 
   .dds-onboarding-list {
-    --line-inset: calc(16 / 14.4 * 1vw);
+    --line-top: calc(40 / 14.4 * 1vw);
+    --line-bottom: calc(16 / 14.4 * 1vw);
     --line-x: 50%;
     --comet-size: calc(34 / 14.4 * 1vw);
     grid-template-columns: repeat(2, minmax(0, 1fr));
